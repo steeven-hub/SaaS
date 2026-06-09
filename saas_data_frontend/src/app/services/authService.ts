@@ -4,8 +4,8 @@ export const authService = {
   login: async (email: string, password: string) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ username: email, password: password }),
     });
     if (!response.ok) {
         const error = new Error('Login failed');
@@ -13,9 +13,16 @@ export const authService = {
         throw error;
     }
     const data = await response.json();
-    if (data.access_token) {
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh);
+    
+    // Accept both 'access_token' or 'access'
+    const accessToken = data.access_token || data.access;
+    const refreshToken = data.refresh_token || data.refresh;
+    
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+    }
+    if (refreshToken) {
+      localStorage.setItem('refresh_token', refreshToken);
     }
     return data;
   },
