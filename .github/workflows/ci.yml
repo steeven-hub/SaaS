@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
-        pip install pytest pytest-django ruff
+        pip install pytest pytest-django ruff google-generativeai
     - name: Run tests
       env:
         DJANGO_SETTINGS_MODULE: core.settings

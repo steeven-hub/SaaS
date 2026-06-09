@@ -3,8 +3,8 @@ import pandas as pd
 import io
 import os
 import hashlib
+import google.generativeai as genai
 from fpdf import FPDF
-from openai import OpenAI
 from django.core.cache import cache
 
 class DataEngine:
@@ -18,29 +18,30 @@ class DataEngine:
             return cached_insight
 
         try:
-            api_key = os.getenv("OPENAI_API_KEY")
+            # Use GEMINI_API_KEY as primary, fallback to OPENAI_API_KEY for convenience during transition
+            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")
             if not api_key:
                 return "AI Insights are currently unavailable (API Key not configured)."
             
-            client = OpenAI(api_key=api_key)
+            genai.configure(api_key=api_key)
+            
+            # Using the specific model requested by the user
+            model = genai.GenerativeModel("gemini-3-flash-preview")
+            
             prompt = (
                 "You are a Senior Business Consultant. analyze the following statistical summary of a dataset "
                 "and provide 3 deep strategic insights for a CEO. Focus on trends, anomalies, or opportunities. "
                 "Format as a clean markdown list.\n\n"
                 f"DATA SUMMARY:\n{summary_stats}"
             )
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            insight = response.choices[0].message.content
+            
+            response = model.generate_content(prompt)
+            insight = response.text
+            
             cache.set(cache_key, insight, 86400)
             return insight
         except Exception as e:
-            # Handle specific OpenAI quota errors
-            if "insufficient_quota" in str(e):
-                return "AI Insights temporarily unavailable: OpenAI quota exceeded. Please check your billing/quota."
-            return f"Could not generate AI insight: {str(e)}"
+            return f"Could not generate AI insight with Gemini: {str(e)}"
 
     @staticmethod
     def generate_pdf_report(insights: list, filename: str = "Analysis") -> bytes:
