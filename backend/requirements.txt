@@ -14,7 +14,7 @@ email-validator
 xlsxwriter
 fpdf2
 openai
-google-generativeai
+google-genai
 mysql-connector-python
 polars
 fastexcel

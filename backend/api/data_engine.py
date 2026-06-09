@@ -3,7 +3,7 @@ import pandas as pd
 import io
 import os
 import hashlib
-import google.generativeai as genai
+from google import genai
 from fpdf import FPDF
 from django.core.cache import cache
 
@@ -23,10 +23,8 @@ class DataEngine:
             if not api_key:
                 return "AI Insights are currently unavailable (API Key not configured)."
             
-            genai.configure(api_key=api_key)
-            
-            # Using the specific model requested by the user
-            model = genai.GenerativeModel("gemini-3-flash-preview")
+            # Unified Client (supports both AI Studio and Vertex AI)
+            client = genai.Client(api_key=api_key)
             
             prompt = (
                 "You are a Senior Business Consultant. analyze the following statistical summary of a dataset "
@@ -35,13 +33,17 @@ class DataEngine:
                 f"DATA SUMMARY:\n{summary_stats}"
             )
             
-            response = model.generate_content(prompt)
+            # Using the modern SDK and the specific model requested
+            response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
+            )
             insight = response.text
             
             cache.set(cache_key, insight, 86400)
             return insight
         except Exception as e:
-            return f"Could not generate AI insight with Gemini: {str(e)}"
+            return f"Could not generate AI insight with Gemini 3: {str(e)}"
 
     @staticmethod
     def generate_pdf_report(insights: list, filename: str = "Analysis") -> bytes:
