@@ -24,3 +24,5 @@ pymongo
 boto3
 google-api-python-client
 pyodbc
+sentry-sdk
+dj-database-url
