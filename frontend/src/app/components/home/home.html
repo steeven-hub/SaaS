@@ -1,0 +1,76 @@
+<div class="landing-page animate-fade-in">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-container">
+      <div class="hero-content">
+        <span class="badge-new">New: Version 2.0 is out!</span>
+        <h1>Transform Your Raw Data into <span class="text-gradient">Pure Value</span></h1>
+        <p>SaaS is the most powerful data cleaning engine for modern teams. Upload, clean, and export your datasets in seconds.</p>
+        <div class="hero-actions">
+          <a routerLink="/register" class="btn-primary-lg">Start for Free</a>
+          <button class="btn-outline-lg" (click)="fileInput.click()">
+            {{ isProcessing ? 'Processing...' : 'Try Live Demo' }}
+          </button>
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept=".csv,.xlsx" hidden>
+        </div>
+        <div class="hero-trust">
+          <p>Trusted by 500+ data engineers worldwide</p>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="visual-card">
+          <div class="card-top">
+            <div class="dots"><span></span><span></span><span></span></div>
+          </div>
+          <div class="card-body">
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line short"></div>
+            <div class="visual-stats">
+              <div class="stat-circle"></div>
+              <div class="stat-bars">
+                <div class="bar" style="height: 40%"></div>
+                <div class="bar" style="height: 70%"></div>
+                <div class="bar" style="height: 50%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section container">
+    <div class="section-header">
+      <h2>Why choose SaaS?</h2>
+      <p>Powerful features to make your data workflow effortless.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Our engine processes thousands of rows in milliseconds using optimized Pandas logic.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Secure by Design</h3>
+        <p>Your data is processed in-memory and never stored permanently on our servers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Smart Cleaning</h3>
+        <p>Automatically detects duplicates, fixes types, and handles missing values for you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section container">
+    <div class="cta-card">
+      <h2>Ready to optimize your data?</h2>
+      <p>Join thousands of users and start cleaning your data today.</p>
+      <a routerLink="/register" class="btn-white">Create Free Account</a>
+    </div>
+  </section>
+</div>

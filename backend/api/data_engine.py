@@ -1,0 +1,134 @@
+import polars as pl
+import pandas as pd
+import io
+import xlsxwriter
+import os
+import hashlib
+from fpdf import FPDF
+from openai import OpenAI
+from django.core.cache import cache
+
+class DataEngine:
+    @staticmethod
+    def get_llm_insights(summary_stats: str) -> str:
+        # Create a unique key based on the input text
+        cache_key = f"llm_insight_{hashlib.md5(summary_stats.encode()).hexdigest()}"
+        cached_insight = cache.get(cache_key)
+        
+        if cached_insight:
+            return cached_insight
+
+        try:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                return "AI Insights are currently unavailable (API Key not configured)."
+            
+            client = OpenAI(api_key=api_key)
+            prompt = (
+                "You are a Senior Business Consultant. analyze the following statistical summary of a dataset "
+                "and provide 3 deep strategic insights for a CEO. Focus on trends, anomalies, or opportunities. "
+                "Format as a clean markdown list.\n\n"
+                f"DATA SUMMARY:\n{summary_stats}"
+            )
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            insight = response.choices[0].message.content
+            cache.set(cache_key, insight, 86400)
+            return insight
+        except Exception as e:
+            # Handle specific OpenAI quota errors
+            if "insufficient_quota" in str(e):
+                return "AI Insights temporarily unavailable: OpenAI quota exceeded. Please check your billing/quota."
+            return f"Could not generate AI insight: {str(e)}"
+
+    @staticmethod
+    def generate_pdf_report(insights: list, filename: str = "Analysis") -> bytes:
+        class PDF(FPDF):
+            def header(self):
+                # Branding
+                self.set_fill_color(15, 23, 42) # Dark background matching UI
+                self.rect(0, 0, 210, 40, 'F')
+                self.set_text_color(45, 212, 191) # Teal color
+                self.set_font("helvetica", 'B', 24)
+                self.cell(0, 20, "Afrihealth Data Engine", ln=True, align='L')
+                self.set_font("helvetica", 'I', 10)
+                self.set_text_color(148, 163, 184)
+                self.cell(0, 5, "Intelligent Business Insights Report", ln=True, align='L')
+                self.ln(10)
+
+            def footer(self):
+                self.set_y(-15)
+                self.set_font("helvetica", 'I', 8)
+                self.set_text_color(128)
+                self.cell(0, 10, f"Page {self.page_no()} | Confidential AI-Generated Report", align='C')
+
+        pdf = PDF()
+        pdf.add_page()
+        pdf.set_font("helvetica", size=12)
+        pdf.set_text_color(30, 41, 59)
+        
+        pdf.set_font("helvetica", 'B', 14)
+        pdf.cell(0, 10, f"Subject: Data Analysis for {filename}", ln=True)
+        pdf.ln(5)
+        
+        pdf.set_font("helvetica", 'B', 12)
+        pdf.cell(0, 10, "Strategic AI Insights:", ln=True)
+        pdf.set_font("helvetica", size=11)
+        
+        for insight in insights:
+            # Clean markdown-style bullets if present
+            clean_text = insight.replace("**", "").replace("#", "")
+            pdf.multi_cell(0, 8, txt=clean_text)
+            pdf.ln(2)
+            
+        return pdf.output()
+
+    @staticmethod
+    def process_data(file_content: bytes, filename: str):
+        # Universal Ingestion
+        if filename.endswith('.csv'):
+            df = pl.read_csv(io.BytesIO(file_content))
+        elif filename.endswith(('.xls', '.xlsx')):
+            df = pl.read_excel(io.BytesIO(file_content))
+        elif filename.endswith('.json'):
+            df = pl.read_json(io.BytesIO(file_content))
+        else:
+            # Re-read with pandas for broader support if polars fails
+            try:
+                pd_df = pd.read_excel(io.BytesIO(file_content))
+                df = pl.from_pandas(pd_df)
+            except:
+                raise ValueError(f"Unsupported or corrupted file format: {filename}")
+
+        # Data Profiling & Statistics for AI
+        desc = df.describe().to_pandas().to_string()
+        
+        # Calculate Correlation Matrix (for Pillar 3)
+        corr_data = {}
+        num_df = df.select(pl.col(pl.Float64, pl.Int64))
+        if len(num_df.columns) >= 2:
+            corr_matrix = num_df.to_pandas().corr()
+            corr_data = corr_matrix.to_dict()
+
+        # AI Insight with Statistics
+        ai_insight = DataEngine.get_llm_insights(desc)
+        
+        insights = [
+            f"Dataset: {filename}",
+            f"Observations: {len(df)} rows | {len(df.columns)} columns",
+            f"Data Quality: {df.null_count().sum().sum()} missing values identified.",
+            ai_insight
+        ]
+
+        # Generate Excel with insights
+        excel_output = io.BytesIO()
+        with pd.ExcelWriter(excel_output, engine='xlsxwriter') as writer:
+            df.to_pandas().to_excel(writer, sheet_name='Data', index=False)
+            pd.DataFrame(insights, columns=['Insights']).to_excel(writer, sheet_name='AI_Insights', index=False)
+            if corr_data:
+                pd.DataFrame(corr_data).to_excel(writer, sheet_name='Correlations')
+
+        excel_output.seek(0)
+        return excel_output, insights, corr_data

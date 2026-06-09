@@ -1,0 +1,8 @@
+<div class="container" *ngIf="kpis">
+  <h2>Admin Dashboard</h2>
+  <div class="stats-grid">
+    <div class="stat-card"><h3>Total Users</h3><p>{{ kpis.total_users }}</p></div>
+    <div class="stat-card"><h3>Active Users</h3><p>{{ kpis.active_users }}</p></div>
+    <div class="stat-card"><h3>Rewards Distributed</h3><p>{{ kpis.total_rewards_distributed }} €</p></div>
+  </div>
+</div>

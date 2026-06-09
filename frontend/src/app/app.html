@@ -1,0 +1,56 @@
+<div class="app-wrapper">
+  <header class="main-header">
+    <nav class="nav-container container">
+      <div class="nav-left">
+        <a routerLink="/" class="brand">
+          <div class="logo-icon">A</div>
+          <span>SaaS</span>
+        </a>
+      </div>
+      
+      <div class="nav-right">
+        <div class="nav-links" *ngIf="isLoggedIn">
+          <div class="dropdown">
+            <button class="dropdown-toggle">Menu ▾</button>
+            <div class="dropdown-content">
+              <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+              <a routerLink="/tools" routerLinkActive="active">ApexEngine Tools</a>
+              <a routerLink="/admin" routerLinkActive="active">Admin</a>
+              <a routerLink="/etl" routerLinkActive="active">ETL Hub</a>
+              <a routerLink="/billing" routerLinkActive="active">Pricing</a>
+              <a routerLink="/profile" routerLinkActive="active">Profile</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="nav-auth">
+          <a routerLink="/login" class="btn-login" *ngIf="!isLoggedIn">Sign In</a>
+          <a routerLink="/register" class="btn-primary" *ngIf="!isLoggedIn">Get Started</a>
+          
+          <div class="user-menu" *ngIf="isLoggedIn">
+            <button (click)="logout()" class="btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="main-footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 SaaS Data Engine. Built for performance.</p>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <app-toast></app-toast>
+</div>

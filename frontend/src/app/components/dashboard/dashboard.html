@@ -1,0 +1,171 @@
+<div class="container animate-fade-in">
+  <div class="dashboard-header">
+    <div class="header-text">
+      <h1>Data Engine Dashboard</h1>
+      <p>Clean, format, and optimize your datasets with ease.</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-card">
+        <span class="stat-value">{{ processedFiles.length }}</span>
+        <span class="stat-label">Files Processed</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ processedFiles.length * 5 }}m</span>
+        <span class="stat-label">Time Saved</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Upload Section -->
+    <section class="upload-section card">
+      <div class="card-header">
+        <h2>Upload New Dataset</h2>
+        <p>Drop your CSV or Excel files here</p>
+      </div>
+      
+      <div class="drop-zone" [class.active]="isDragging" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)">
+        <div class="upload-visual">
+          <div class="icon-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <p class="main-text">Click to upload or drag and drop</p>
+          <p class="sub-text">CSV, XLSX up to 10MB</p>
+        </div>
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept=".csv,.xlsx,.xls,.json,.parquet" hidden>
+        <button class="btn-primary" (click)="fileInput.click()">Select File</button>
+      </div>
+
+      <div class="upload-footer" *ngIf="errorMessage">
+        <p class="error-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{errorMessage}}
+        </p>
+      </div>
+    </section>
+
+    <!-- Activity Section -->
+    <section class="activity-section card">
+      <div class="card-header">
+        <h2>Recent Activity</h2>
+        <p>Monitor your processing history</p>
+      </div>
+
+      <div class="empty-state" *ngIf="processedFiles.length === 0">
+        <div class="empty-icon">📂</div>
+        <p>No files processed yet. Start by uploading one!</p>
+      </div>
+
+      <div class="activity-list" *ngIf="processedFiles.length > 0">
+        <div class="activity-card" *ngFor="let file of processedFiles">
+          <div class="file-info">
+            <div class="file-icon-box" [class.success]="file.status === 'Completed'" [class.processing]="file.status === 'Processing'" [class.failed]="file.status === 'Failed'">
+              <svg *ngIf="file.status === 'Completed'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <svg *ngIf="file.status === 'Processing'" class="spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+              <svg *ngIf="file.status === 'Failed'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <div class="file-details">
+              <p class="file-name">{{file.name}}</p>
+              <div class="file-meta">
+                <span class="status-badge" [class]="file.status.toLowerCase()">{{file.status}}</span>
+                <span class="dot"></span>
+                <span class="time">{{file.date | date:'shortTime'}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-ghost-sm" *ngIf="file.status === 'Completed'" (click)="openPreview(file)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview
+            </button>
+            <button class="btn-download" *ngIf="file.status === 'Completed'" (click)="downloadFile(file)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pro-tips-card card">
+      <div class="card-header">
+        <h2>💡 Data Pro Tip</h2>
+      </div>
+      <div class="card-body">
+        <p>Did you know you can use our <strong>Bulk Upload</strong> feature to process up to 10 files simultaneously? Just drag and drop a folder!</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="modal-overlay" *ngIf="showPreview" (click)="closePreview()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Preview: {{ selectedFile?.name }}</h3>
+        <button class="btn-close" (click)="closePreview()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Visualization Section -->
+        <div class="visualization-container" *ngIf="selectedFile?.chartData">
+          <div class="viz-header">
+            <h3>📊 Interactive Visualization</h3>
+            <div class="viz-controls">
+              <div class="control-group">
+                <label>Select Column</label>
+                <select [(ngModel)]="selectedColumn" (change)="updateChart()">
+                  <option *ngFor="let col of selectedFile?.chartData | keyvalue" [value]="col.key">{{ col.key }}</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label>Chart Type</label>
+                <select [(ngModel)]="selectedChartType" (change)="updateChart()">
+                  <option value="bar">Bar Chart</option>
+                  <option value="pie">Pie Chart</option>
+                  <option value="line">Line Chart</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="chart-box">
+            <canvas #chartCanvas></canvas>
+          </div>
+        </div>
+
+        <div class="profiling-summary">
+          <div class="metric" *ngFor="let item of selectedFile?.profilingData">
+            <span class="label">{{ item.Metric }}</span>
+            <span class="value">{{ item.Value }}</span>
+          </div>
+        </div>
+        
+        <div class="profiling-summary" *ngIf="selectedFile?.insights">
+          <h3>🚀 Actionable Insights</h3>
+          <ul>
+            <li *ngFor="let insight of selectedFile?.insights" class="insight-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              {{ insight }}
+            </li>
+          </ul>
+        </div>
+        <div class="table-container" *ngIf="selectedFile?.previewData">
+          <table>
+            <thead>
+              <tr>
+                <th *ngFor="let col of selectedFile?.previewColumns">{{ col }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of selectedFile?.previewData">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="preview-note">Showing first 5 rows of cleaned data.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" (click)="downloadFile(selectedFile!)">Download Full File</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="container animate-fade-in">
+  <h1>ETL Hub</h1>
+  
+  <div class="card">
+    <div class="card-header">
+      <h2>Connect Database</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Type</label>
+          <select [(ngModel)]="conn.db_type" class="value-input">
+            <option value="postgresql">PostgreSQL</option>
+            <option value="mysql+mysqlconnector">MySQL</option>
+            <option value="mongodb">MongoDB</option>
+            <option value="mssql">SQL Server / Oracle</option>
+            <option value="s3">Amazon S3</option>
+            <option value="googlesheets">Google Sheets</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Host</label>
+          <input type="text" [(ngModel)]="conn.host" class="value-input">
+        </div>
+        <div class="form-group">
+          <label>Port</label>
+          <input type="number" [(ngModel)]="conn.port" class="value-input">
+        </div>
+        <div class="form-group">
+          <label>User</label>
+          <input type="text" [(ngModel)]="conn.user" class="value-input">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="conn.password" class="value-input">
+        </div>
+        <div class="form-group">
+          <label>Initial Database</label>
+          <input type="text" [(ngModel)]="conn.dbname" class="value-input" placeholder="postgres">
+        </div>
+      </div>
+      <button class="btn-primary" (click)="discoverDatabases()">Discover Databases</button>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="dbs.length > 0">
+    <div class="card-header">
+      <h2>Available Databases</h2>
+    </div>
+    <div class="card-body">
+      <ul class="db-list">
+        <li *ngFor="let db of dbs">{{ db }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

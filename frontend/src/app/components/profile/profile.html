@@ -1,0 +1,58 @@
+<div class="container animate-fade-in" *ngIf="user">
+  <div class="profile-header">
+    <h1>Account Settings</h1>
+    <p>Manage your personal information and subscription.</p>
+  </div>
+
+  <div class="profile-grid">
+    <!-- User Info Card -->
+    <div class="profile-card card">
+      <div class="card-header">
+        <h2>Personal Details</h2>
+      </div>
+      <div class="card-body">
+        <div class="info-group">
+          <label>Email Address</label>
+          <div class="value-box">{{ user.email }}</div>
+        </div>
+        <div class="info-group">
+          <label>First Name</label>
+          <input type="text" [(ngModel)]="user.first_name" class="value-input">
+        </div>
+        <div class="info-group">
+          <label>Last Name</label>
+          <input type="text" [(ngModel)]="user.last_name" class="value-input">
+        </div>
+        <div class="info-group">
+          <label>Date of Birth</label>
+          <input type="date" [(ngModel)]="user.date_of_birth" class="value-input">
+        </div>
+        <div class="info-group">
+          <label>Profile Picture URL</label>
+          <input type="text" [(ngModel)]="user.profile_picture_url" class="value-input" placeholder="https://...">
+        </div>
+        <div class="info-group">
+          <label>Member Since</label>
+          <div class="value-box">{{ user.created_at | date:'mediumDate' }}</div>
+        </div>
+        <button class="btn-primary" (click)="updateProfile()">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Subscription Card -->
+    <div class="profile-card card">
+      <div class="card-header">
+        <h2>Subscription Status</h2>
+      </div>
+      <div class="card-body">
+        <div class="plan-badge">{{ user.subscription_plan | titlecase }} Plan</div>
+        <p class="plan-desc">Current Status: <strong>{{ user.subscription_status | titlecase }}</strong></p>
+        <ul class="plan-features">
+          <li>Unlimited processing</li>
+          <li>Advanced formatting</li>
+        </ul>
+        <a routerLink="/billing" class="btn-upgrade">Upgrade to Pro</a>
+      </div>
+    </div>
+  </div>
+</div>

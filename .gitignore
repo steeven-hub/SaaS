@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+.angular/
+
+# Environment and Secrets
+.env
+*.db
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+
+# Local data
+.pytest_cache/
+media/validated_files/
+media/profiles/

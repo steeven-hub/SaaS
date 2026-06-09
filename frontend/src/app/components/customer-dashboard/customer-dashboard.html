@@ -1,0 +1,25 @@
+<div class="container animate-fade-in">
+  <h1>My Account</h1>
+  <div class="card">
+    <div class="card-body">
+      <h3>Subscription Status</h3>
+      <p>Plan: <strong>{{ user?.subscription_plan || 'None' }}</strong></p>
+      <p>Status: {{ user?.subscription_status }}</p>
+      
+      <div *ngIf="user?.subscription_plan">
+        <a *ngIf="user?.subscription_plan === 'starter' || user?.subscription_plan === 'hybrid'" 
+           href="/downloads/starter.zip" class="btn-primary">Download Starter Kit</a>
+        <a *ngIf="user?.subscription_plan === 'data_pack' || user?.subscription_plan === 'hybrid'" 
+           href="/downloads/data_scripts.zip" class="btn-primary">Download Data Scripts</a>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h3>Affiliate Dashboard</h3>
+      <p>Share this link to earn commissions:</p>
+      <div class="value-box">saas.io/ref/{{ user?.affiliate_code }}</div>
+      <button class="btn-primary" (click)="copyLink()">Copy Link</button>
+    </div>
+  </div>
+</div>
