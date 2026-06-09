@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { runMarketPipeline } from '../../services/pipelineService';
 
-// Styles minimalistes pour éviter tout conflit MUI
 const styles = {
   container: { padding: '40px', maxWidth: '800px', margin: '0 auto', color: '#fff', fontFamily: 'sans-serif' },
   paper: { padding: '20px', background: 'rgba(30, 41, 59, 0.8)', borderRadius: '8px', border: '1px solid #2dd4bf', marginBottom: '20px' },
@@ -13,13 +12,14 @@ export function DataPipelinePage() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleRun = async () => {
     setLoading(true);
     setError(null);
     setResult(null); 
     try {
-      const data = await runMarketPipeline();
+      const data = await runMarketPipeline(file);
       setResult(data);
     } catch (e) {
       setError('Erreur lors du pipeline.');
@@ -34,8 +34,13 @@ export function DataPipelinePage() {
       <h1 style={{ marginBottom: '20px' }}>Pipeline de Données Marchés</h1>
       
       <div style={styles.paper}>
+        <input 
+          type="file" 
+          onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} 
+          style={{ marginBottom: '10px', display: 'block' }}
+        />
         <button onClick={handleRun} disabled={loading} style={styles.button}>
-          {loading ? 'Exécution...' : 'Exécuter le Pipeline Complet'}
+          {loading ? 'Exécution...' : 'Exécuter le Pipeline (ou Upload CSV)'}
         </button>
       </div>
 

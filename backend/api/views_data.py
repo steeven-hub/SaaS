@@ -97,10 +97,18 @@ class MarketPipelineView(APIView):
     """Expose the new Data Engineering Pipeline."""
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        """Déclenche le pipeline complet et renvoie les résultats."""
+    def post(self, request):
+        """Déclenche le pipeline avec un fichier uploadé ou généré et renvoie les résultats."""
+        file = request.FILES.get('file')
+        file_content = None
+        filename = None
+        
+        if file:
+            file_content = file.read()
+            filename = file.name
+        
         try:
-            metrics, ai_analysis, report_path = MarketDataService.run_full_pipeline()
+            metrics, ai_analysis, report_path = MarketDataService.run_full_pipeline(file_content, filename)
             
             return Response({
                 "status": "Pipeline executed",
