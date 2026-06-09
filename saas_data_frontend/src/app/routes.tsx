@@ -11,6 +11,7 @@ import { MainLayout } from "./components/saas/MainLayout";
 import { ProtectedRoute } from "./components/saas/ProtectedRoute";
 import { ProfilePage } from "./components/saas/ProfilePage";
 import { TeamPage } from "./components/saas/TeamPage";
+import { DataPipelinePage } from "./components/saas/DataPipelinePage";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
           { path: "changelog", Component: ChangelogPage },
           { path: "profile", Component: ProfilePage },
           { path: "team", Component: TeamPage },
+          { path: "pipeline", Component: DataPipelinePage },
         ],
       },
     ],

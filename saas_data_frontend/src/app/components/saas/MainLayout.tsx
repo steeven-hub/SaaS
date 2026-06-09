@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box, Container, IconButton } from '@mui/material';
-import { Database, Home, BookOpen, CreditCard, LayoutDashboard, Brain, Trophy, LogOut, LogIn, Sun, Moon, User, Users } from 'lucide-react';
+import { Database, Home, BookOpen, CreditCard, LayoutDashboard, Brain, Trophy, LogOut, LogIn, Sun, Moon, User, Users, Workflow } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { authService } from '../../services/authService';
 
@@ -23,6 +23,7 @@ export function MainLayout() {
   if (isAuthenticated) {
     navItems.push({ label: 'Profil', path: '/profile', icon: User });
     navItems.push({ label: 'Équipe', path: '/team', icon: Users });
+    navItems.push({ label: 'Pipeline', path: '/pipeline', icon: Workflow });
   }
 
   const isActive = (path: string) => location.pathname === path;
