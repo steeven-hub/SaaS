@@ -1,12 +1,33 @@
-import os
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import io
 from google import genai
-from django.core.cache import cache
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 class MarketDataService:
+    @staticmethod
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+    def get_llm_insights(summary_stats: str) -> str:
+        try:
+            api_key = os.getenv("GEMINI_API_KEY")
+            client = genai.Client(api_key=api_key)
+            
+            prompt = (
+                "You are a Senior Business Consultant. analyze the following statistical summary of a dataset "
+                "and provide 3 deep strategic insights for a CEO. Focus on trends, anomalies, or opportunities. "
+                "Format as a clean markdown list.\n\n"
+                f"DATA SUMMARY:\n{summary_stats}"
+            )
+            
+            response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
+            )
+            return response.text
+        except Exception as e:
+            raise e # Let tenacity handle retry
+
     @staticmethod
     def run_full_pipeline(file_content=None, filename=None):
         """Exécute le pipeline complet : Génération ou Ingestion, Nettoyage, Métriques, Rapport, IA."""
@@ -113,14 +134,8 @@ class MarketDataService:
         """
         
         try:
-            api_key = os.getenv("GEMINI_API_KEY")
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model="gemini-3-flash-preview",
-                contents=prompt
-            )
-            ai_analysis = response.text
+            ai_analysis = MarketDataService.get_llm_insights(prompt)
         except Exception as e:
-            ai_analysis = f"Erreur IA : {str(e)}"
+            ai_analysis = f"Erreur IA après tentatives : {str(e)}"
             
         return metrics, ai_analysis, report_path

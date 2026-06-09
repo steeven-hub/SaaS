@@ -1,6 +1,6 @@
 # Data Quality Report — Market Prices Africa V1
 
-Generated on: 2026-06-09 20:47
+Generated on: 2026-06-09 20:56
 
 | Metric | Value |
 |-------|-------|
