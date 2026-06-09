@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.http import HttpResponse
 from .data_engine import DataEngine
+from .market_data_service import MarketDataService
 from .permissions import IsBasePlan, IsProPlan
 from urllib.parse import quote
 from django.views.decorators.csrf import csrf_exempt
@@ -91,3 +92,22 @@ class GeneratePDFView(APIView):
         response = HttpResponse(pdf_bytes, content_type="application/pdf")
         response['Content-Disposition'] = f"attachment; filename={filename}.pdf"
         return response
+
+class MarketPipelineView(APIView):
+    """Expose the new Data Engineering Pipeline."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        """Déclenche le pipeline et renvoie les métriques."""
+        # 1. Générer
+        df = MarketDataService.generate_sample_data()
+        # 2. Nettoyer
+        df_clean = MarketDataService.clean_data(df)
+        # 3. Métriques
+        metrics = MarketDataService.compute_quality_metrics(df_clean)
+        
+        return Response({
+            "status": "Pipeline executed",
+            "metrics": metrics,
+            "sample": df_clean.head(5).to_dict(orient="records")
+        }, status=status.HTTP_200_OK)
