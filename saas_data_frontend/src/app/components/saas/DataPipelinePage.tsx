@@ -1,69 +1,61 @@
 import { useState } from 'react';
-import { Container, Typography, Paper, Button, CircularProgress, Alert, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { PlayArrow } from 'lucide-react';
-import { runMarketPipeline } from '../services/pipelineService';
+import { runMarketPipeline } from '../../services/pipelineService';
+
+// Styles minimalistes pour éviter tout conflit MUI
+const styles = {
+  container: { padding: '40px', maxWidth: '800px', margin: '0 auto', color: '#fff', fontFamily: 'sans-serif' },
+  paper: { padding: '20px', background: 'rgba(30, 41, 59, 0.8)', borderRadius: '8px', border: '1px solid #2dd4bf', marginBottom: '20px' },
+  button: { padding: '10px 20px', background: '#2dd4bf', border: 'none', borderRadius: '4px', cursor: 'pointer', color: '#0f172a', fontWeight: 'bold' },
+  section: { marginTop: '20px', padding: '20px', background: '#0f172a', borderRadius: '8px', overflowX: 'auto' as const }
+};
 
 export function DataPipelinePage() {
-  const [metrics, setMetrics] = useState<any>(null);
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleRunPipeline = async () => {
+  const handleRun = async () => {
     setLoading(true);
     setError(null);
+    setResult(null); 
     try {
       const data = await runMarketPipeline();
-      setMetrics(data.metrics);
-    } catch (err) {
-      setError('Erreur lors de l\'exécution du pipeline.');
+      setResult(data);
+    } catch (e) {
+      setError('Erreur lors du pipeline.');
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Typography variant="h4" sx={{ color: 'white', fontWeight: 800, mb: 4 }}>
-        Pipeline de Données Marchés
-      </Typography>
+    <div style={styles.container}>
+      <h1 style={{ marginBottom: '20px' }}>Pipeline de Données Marchés</h1>
+      
+      <div style={styles.paper}>
+        <button onClick={handleRun} disabled={loading} style={styles.button}>
+          {loading ? 'Exécution...' : 'Exécuter le Pipeline Complet'}
+        </button>
+      </div>
 
-      <Paper sx={{ p: 4, background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(45, 212, 191, 0.2)', borderRadius: 2 }}>
-        <Button 
-          variant="contained" 
-          startIcon={<PlayArrow />} 
-          onClick={handleRunPipeline}
-          disabled={loading}
-          sx={{ background: '#2dd4bf', '&:hover': { background: '#14b8a6' } }}
-        >
-          {loading ? <CircularProgress size={24} /> : 'Exécuter le Pipeline'}
-        </Button>
-      </Paper>
+      {error && <div style={{ color: '#ef4444', marginTop: '10px' }}>{error}</div>}
 
-      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-
-      {metrics && (
-        <Paper sx={{ mt: 4, p: 4, background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(45, 212, 191, 0.2)', borderRadius: 2 }}>
-          <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>Indicateurs de Qualité</Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: '#94a3b8' }}>Métrique</TableCell>
-                  <TableCell sx={{ color: '#94a3b8' }}>Valeur</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Object.entries(metrics).map(([key, value]) => (
-                  <TableRow key={key}>
-                    <TableCell sx={{ color: 'white' }}>{key}</TableCell>
-                    <TableCell sx={{ color: 'white' }}>{String(value)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+      {result && (
+        <>
+          <div style={styles.section}>
+            <h3>Indicateurs de Qualité</h3>
+            <pre>{JSON.stringify(result.metrics, null, 2)}</pre>
+          </div>
+          <div style={styles.section}>
+            <h3>Analyse IA</h3>
+            <div style={{ whiteSpace: 'pre-wrap' }}>{result.ai_analysis}</div>
+          </div>
+          <div style={styles.section}>
+            <p>Rapport généré : {result.report_url}</p>
+          </div>
+        </>
       )}
-    </Container>
+    </div>
   );
 }

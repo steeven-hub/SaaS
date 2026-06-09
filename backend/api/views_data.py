@@ -98,16 +98,15 @@ class MarketPipelineView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        """Déclenche le pipeline et renvoie les métriques."""
-        # 1. Générer
-        df = MarketDataService.generate_sample_data()
-        # 2. Nettoyer
-        df_clean = MarketDataService.clean_data(df)
-        # 3. Métriques
-        metrics = MarketDataService.compute_quality_metrics(df_clean)
-        
-        return Response({
-            "status": "Pipeline executed",
-            "metrics": metrics,
-            "sample": df_clean.head(5).to_dict(orient="records")
-        }, status=status.HTTP_200_OK)
+        """Déclenche le pipeline complet et renvoie les résultats."""
+        try:
+            metrics, ai_analysis, report_path = MarketDataService.run_full_pipeline()
+            
+            return Response({
+                "status": "Pipeline executed",
+                "metrics": metrics,
+                "ai_analysis": ai_analysis,
+                "report_url": report_path
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
