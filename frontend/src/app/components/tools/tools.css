@@ -1,4 +1,0 @@
-.container { padding: 2rem; max-width: 1000px; margin: auto; }
-.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-.card { background: #fff; padding: 1.5rem; border-radius: 10px; border: 1px solid #e2e8f0; }
-.btn-primary { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; margin-top: 0.5rem; display: block; width: 100%; }
