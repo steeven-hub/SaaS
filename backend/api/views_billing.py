@@ -3,7 +3,6 @@ import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.conf import settings
 from users.models import User
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -20,7 +19,7 @@ class CreateCheckoutSessionView(APIView):
 
     def post(self, request):
         try:
-            print(f"DEBUG: START - CreateCheckoutSessionView.post")
+            print("DEBUG: START - CreateCheckoutSessionView.post")
             plan = request.query_params.get('plan', '').lower()
             print(f"DEBUG: Received plan: '{plan}'")
             

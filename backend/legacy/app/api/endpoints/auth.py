@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Optional
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from app.core.database import get_session
 from app.core.security import verify_password, get_password_hash, create_access_token, generate_referral_code
 from app.models.user import User, UserPublic
 from pydantic import BaseModel, EmailStr
+from app.api.endpoints.deps import get_active_user
 
 router = APIRouter()
-
-from app.api.endpoints.deps import get_active_user
 
 @router.get("/me", response_model=UserPublic)
 def get_me(current_user: User = Depends(get_active_user)):

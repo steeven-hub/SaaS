@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Header, Query
 from app.api.endpoints.deps import get_active_user
 from app.models.user import User
 from app.core.database import get_session
-from sqlmodel import Session, select
+from sqlmodel import select
 
 router = APIRouter()
 

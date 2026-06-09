@@ -1,8 +1,7 @@
 import io
 import polars as pl
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from app.api.endpoints.deps import get_active_user, verify_plan_access
-from app.models.user import User
+from fastapi import APIRouter, UploadFile, File, Depends
+from app.api.endpoints.deps import verify_plan_access
 
 router = APIRouter()
 

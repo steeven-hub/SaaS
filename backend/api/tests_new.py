@@ -4,7 +4,6 @@ from django.urls import reverse
 from users.models import User
 import io
 import json
-import polars as pl
 
 class SubmissionValidatorTest(TestCase):
     def setUp(self):

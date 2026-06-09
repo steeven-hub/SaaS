@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 from dotenv import load_dotenv
 import sentry_sdk
 
@@ -111,8 +112,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-import dj_database_url
-
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "afrihealth.db"}',
@@ -187,3 +186,4 @@ SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 CORS_ALLOW_ALL_ORIGINS = DEBUG # Keep true only for development
+ORIGINS = DEBUG # Keep true only for development

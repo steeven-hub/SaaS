@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Any
 from app.api.endpoints.deps import get_active_user
 from app.models.user import User
 
@@ -8,8 +8,6 @@ from app.models.user import User
 from pymongo import MongoClient
 import boto3
 import pyodbc
-from googleapiclient.discovery import build
-from google.oauth2 import service_account
 
 router = APIRouter()
 

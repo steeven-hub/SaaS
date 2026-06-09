@@ -2,7 +2,6 @@ import uuid
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-from users.models import User
 
 class AffiliateStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -53,7 +53,8 @@ class SubmissionValidatorView(APIView):
             logger.info(f"Processing validation for file: {file.name}, user: {request.user.id}")
             
             for task in tasks:
-                if not task.get('completed'): continue
+                if not task.get('completed'):
+                    continue
                 task_id = task.get('id')
                 
                 if task_id == 1:
@@ -76,10 +77,13 @@ class SubmissionValidatorView(APIView):
                     report["tasks_completed"].append(f"Duplicates removed: {before - len(df)}")
                 elif task_id == 3:
                     cat_cols = df.select(pl.col(pl.Utf8)).columns
-                    if cat_cols: df = df.to_dummies(cat_cols); report["tasks_completed"].append("Categorical variables encoded")
+                    if cat_cols:
+                        df = df.to_dummies(cat_cols)
+                        report["tasks_completed"].append("Categorical variables encoded")
                 elif task_id == 4:
                     num_cols = df.select(pl.col(pl.Float64, pl.Int64)).columns
-                    for col in num_cols: df = df.with_columns((pl.col(col) - pl.col(col).mean()) / pl.col(col).std())
+                    for col in num_cols:
+                        df = df.with_columns((pl.col(col) - pl.col(col).mean()) / pl.col(col).std())
                     report["tasks_completed"].append("Features scaled")
                 elif task_id == 5:
                     num_cols = df.select(pl.col(pl.Float64, pl.Int64)).columns
@@ -96,16 +100,19 @@ class SubmissionValidatorView(APIView):
                         report["tasks_completed"].append("Interaction feature created")
                 elif task_id == 7:
                     num_cols = df.select(pl.col(pl.Float64, pl.Int64)).columns
-                    for col in num_cols: df = df.with_columns(pl.col(col).pow(2).alias(f"{col}_sq"))
+                    for col in num_cols:
+                        df = df.with_columns(pl.col(col).pow(2).alias(f"{col}_sq"))
                     report["tasks_completed"].append("Polynomial features generated")
                 elif task_id == 8:
                     num_cols = df.select(pl.col(pl.Float64, pl.Int64)).columns
                     for col in num_cols:
-                        if df[col].var() < 0.01: df = df.drop(col)
+                        if df[col].var() < 0.01:
+                            df = df.drop(col)
                     report["tasks_completed"].append("Low variance features removed")
                 elif task_id == 9:
                     date_cols = df.select(pl.col(pl.Datetime)).columns
-                    for col in date_cols: df = df.with_columns(pl.col(col).dt.hour().alias(f"{col}_hour"))
+                    for col in date_cols:
+                        df = df.with_columns(pl.col(col).dt.hour().alias(f"{col}_hour"))
                     report["tasks_completed"].append("Temporal features extracted")
 
             csv_output = io.BytesIO()

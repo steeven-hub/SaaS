@@ -8,7 +8,6 @@ class FeatureEngineeringView(APIView):
 
     def post(self, request):
         # Placeholder for real feature engineering logic
-        data = request.data.get('data')
         columns = request.data.get('columns', [])
         operation = request.data.get('operation')
         

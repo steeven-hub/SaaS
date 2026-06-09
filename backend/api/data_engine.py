@@ -1,7 +1,6 @@
 import polars as pl
 import pandas as pd
 import io
-import xlsxwriter
 import os
 import hashlib
 from fpdf import FPDF
@@ -99,7 +98,7 @@ class DataEngine:
             try:
                 pd_df = pd.read_excel(io.BytesIO(file_content))
                 df = pl.from_pandas(pd_df)
-            except:
+            except Exception:
                 raise ValueError(f"Unsupported or corrupted file format: {filename}")
 
         # Data Profiling & Statistics for AI

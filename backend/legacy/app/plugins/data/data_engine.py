@@ -1,7 +1,6 @@
 import polars as pl
 import pandas as pd
 import io
-import xlsxwriter
 import os
 from fpdf import FPDF
 from openai import OpenAI

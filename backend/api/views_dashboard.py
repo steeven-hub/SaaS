@@ -28,7 +28,7 @@ class LicensesView(APIView):
                     'users': f'1/{users_limit}'
                 },
             ])
-        except Exception as e:
+        except Exception:
             logger.exception("Error in LicensesView")
             return Response({"error": "Failed to fetch licenses"}, status=500)
 
@@ -48,7 +48,7 @@ class InvoicesView(APIView):
             return Response([
                 {'id': f'INV-2026-{org_id:02d}', 'date': '2026-06-07', 'amount': amount, 'status': 'Payé'},
             ])
-        except Exception as e:
+        except Exception:
             logger.exception("Error in InvoicesView")
             return Response({"error": "Failed to fetch invoices"}, status=500)
 

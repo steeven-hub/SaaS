@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-from django.db.models import Count, Sum
+from django.db.models import Sum
 from users.models import User
 
 class AdminKPIsView(APIView):

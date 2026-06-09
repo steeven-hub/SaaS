@@ -1,8 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .permissions import IsProPlan
-from users.models import User, Organization
+from users.models import User
 
 class TeamMembersView(APIView):
     permission_classes = [permissions.IsAuthenticated]
