@@ -40,10 +40,11 @@ class MarketDataService:
             
         # 2. Ingestion (Génération si aucun fichier, sinon lecture)
         if file_content and filename:
-            if filename.endswith('.csv'):
+            print(f"DEBUG: Received file: {filename}")
+            if filename.lower().endswith('.csv'):
                 df_raw = pd.read_csv(io.BytesIO(file_content))
             else:
-                raise ValueError("Format de fichier non supporté. Utilisez du CSV.")
+                raise ValueError(f"Format de fichier non supporté: {filename}. Utilisez du CSV.")
         else:
             # Génération d'un dataset réaliste
             pays = ["Benin", "Ghana", "Togo"]
