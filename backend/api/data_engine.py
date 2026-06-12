@@ -124,13 +124,39 @@ class DataEngine:
             ai_insight
         ]
 
-        # Generate Excel with insights
-        excel_output = io.BytesIO()
-        with pd.ExcelWriter(excel_output, engine='xlsxwriter') as writer:
-            df.to_pandas().to_excel(writer, sheet_name='Data', index=False)
-            pd.DataFrame(insights, columns=['Insights']).to_excel(writer, sheet_name='AI_Insights', index=False)
-            if corr_data:
-                pd.DataFrame(corr_data).to_excel(writer, sheet_name='Correlations')
+    @staticmethod
+    def clean_text(df, col_name, operations):
+        """Applies various NLP cleaning operations."""
+        if "Minuscules" in operations:
+            df[col_name] = df[col_name].str.to_lowercase()
+        if "Supprimer espaces" in operations:
+            df[col_name] = df[col_name].str.strip()
+        # Note: Polars regex handling is different from pandas, kept simple for now
+        return df
 
-        excel_output.seek(0)
-        return excel_output, insights, corr_data
+    @staticmethod
+    def remove_outliers(df, col_name, method='Z-Score'):
+        """Handles outliers using Z-Score or IQR."""
+        if method == 'Z-Score':
+            mean = df[col_name].mean()
+            std = df[col_name].std()
+            z_scores = (df[col_name] - mean) / std
+            df = df.filter((z_scores.abs() <= 3))
+        elif method == 'IQR':
+            q1 = df[col_name].quantile(0.25)
+            q3 = df[col_name].quantile(0.75)
+            iqr = q3 - q1
+            lower = q1 - 1.5 * iqr
+            upper = q3 + 1.5 * iqr
+            df = df.filter((df[col_name] >= lower) & (df[col_name] <= upper))
+        return df
+
+    @staticmethod
+    def pivot_data(df, index, values, aggfunc='mean'):
+        """Pivots data based on specified parameters."""
+        return df.pivot(index=index, values=values, aggregate=aggfunc)
+
+    @staticmethod
+    def merge_data(df1, df2, on, how='inner'):
+        """Merges two dataframes."""
+        return df1.join(df2, on=on, how=how)

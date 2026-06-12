@@ -17,15 +17,30 @@ class FileUploadView(APIView):
         if not file:
             return Response({"detail": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
         
+        # Log the user who is performing the action
+        print(f"User {request.user.email} is processing file: {file.name}")
+        
         try:
             content = file.read()
             excel_output, insights, corr_data = DataEngine.process_data(content, file.name)
+            
+            # --- Enregistrement du résultat pour l'utilisateur ---
+            from .models import ValidationRecord
+            from django.core.files.base import ContentFile
+            
+            record = ValidationRecord.objects.create(
+                user=request.user,
+                filename=file.name,
+                report={"insights": insights, "correlations": corr_data}
+            )
+            record.processed_file.save(f"processed_{record.id}.xlsx", ContentFile(excel_output.getvalue()))
             
             # If the user wants JSON (Auto-EDA)
             if request.query_params.get('format') == 'json':
                 return Response({
                     "insights": insights,
-                    "correlations": corr_data
+                    "correlations": corr_data,
+                    "record_id": record.id
                 })
 
             filename_base = file.name.split('.')[0]
