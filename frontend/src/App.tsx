@@ -21,6 +21,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 import ComparePage from './pages/ComparePage';
 import RoadmapPage from './pages/RoadmapPage';
+import DashboardPreviewPage from './pages/DashboardPreviewPage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
