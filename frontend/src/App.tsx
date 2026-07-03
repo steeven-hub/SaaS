@@ -21,7 +21,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 import ComparePage from './pages/ComparePage';
 import RoadmapPage from './pages/RoadmapPage';
-import DashboardPreviewPage from './pages/DashboardPreviewPage';
+import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -49,6 +49,7 @@ export default function App() {
           <Route path="compare" element={<ComparePage />} />
           <Route path="roadmap" element={<RoadmapPage />} />
           <Route path="dashboard-preview" element={<DashboardPreviewPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
           
           {/* Support */}
           <Route path="contact" element={<ContactPage />} />
