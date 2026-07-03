@@ -43,5 +43,7 @@ jobs:
         node-version: '20'
     - name: Install dependencies
       run: npm install
+    - name: List files for debugging
+      run: ls -la
     - name: Build frontend
       run: npm run build
