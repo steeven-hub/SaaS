@@ -32,6 +32,9 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
     - uses: actions/checkout@v3
     - name: Set up Node.js
@@ -39,6 +42,6 @@ jobs:
       with:
         node-version: '20'
     - name: Install dependencies
-      run: cd frontend && npm install
+      run: npm install
     - name: Build frontend
-      run: cd frontend && npm run build
+      run: npm run build
