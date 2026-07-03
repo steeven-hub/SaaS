@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Upload, Play, ArrowRight, CheckCircle, FileSpreadsheet, BarChart3, Sparkles } from 'lucide-react';
 
 const DEMO_DATA = [
@@ -80,13 +81,13 @@ export default function HeroSection() {
                 Commencer Gratuitement
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
-              <a
-                href="#features"
+              <Link
+                to="/features/ai-engine"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-xl border border-slate-700 text-slate-300 hover:border-teal-500/50 hover:text-teal-400 hover:bg-teal-500/5 transition-all duration-300"
               >
                 <Play className="w-4 h-4" />
                 Découvrir l'Auto-EDA
-              </a>
+              </Link>
             </div>
 
             {/* Social proof */}

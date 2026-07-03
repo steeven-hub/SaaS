@@ -123,6 +123,16 @@ class DataEngine:
             f"Data Quality: {df.null_count().sum().sum()} missing values identified.",
             ai_insight
         ]
+        
+        # Create an Excel output with both Data and AI_Insights sheets
+        excel_output = io.BytesIO()
+        with pd.ExcelWriter(excel_output, engine='xlsxwriter') as writer:
+            df.to_pandas().to_excel(writer, sheet_name='Data', index=False)
+            insights_df = pd.DataFrame(insights, columns=['AI Insights'])
+            insights_df.to_excel(writer, sheet_name='AI_Insights', index=False)
+        excel_output.seek(0)
+        
+        return excel_output, insights, corr_data
 
     @staticmethod
     def clean_text(df, col_name, operations):

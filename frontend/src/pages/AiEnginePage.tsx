@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Brain, ArrowRight, ArrowLeft, Cpu, BarChart3, FileText,
   TrendingUp, Sparkles, Database, Zap, PieChart, LineChart, 
   Activity, Download, Table, Filter
 } from 'lucide-react';
+import api from '../utils/api';
 
 const AI_CAPABILITIES = [
   {
@@ -75,6 +77,29 @@ const DASHBOARD_FEATURES = [
 ];
 
 export default function AiEnginePage() {
+  const [model, setModel] = useState('rf');
+  const [file, setFile] = useState<File | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [reportUrl, setReportUrl] = useState<string | null>(null);
+
+  const handleTrain = async () => {
+    if (!file) return;
+    setProcessing(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('model', model);
+    try {
+      const response = await api.post('/data/pipeline', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setReportUrl(response.data.report_url);
+    } catch (error) {
+      alert('Erreur lors de l\'entraînement.');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <div className="pt-16">
       {/* Hero */}
@@ -109,21 +134,23 @@ export default function AiEnginePage() {
                 prédire des résultats et générer des rapports PDF professionnels automatiquement.
               </p>
 
-              <div className="mb-6 bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Choisir un modèle Auto-ML :</label>
-                <select className="w-full bg-slate-800 text-white rounded-lg p-2 border border-slate-700">
+              <div className="mb-6 bg-slate-900/50 p-6 rounded-xl border border-slate-700">
+                <h3 className="text-lg font-bold text-white mb-4">Entraîner un modèle</h3>
+                <input type="file" onChange={(e) => e.target.files && setFile(e.target.files[0])} className="text-slate-400 mb-4 block" />
+                <select value={model} onChange={(e) => setModel(e.target.value)} className="w-full bg-slate-800 text-white rounded-lg p-3 mb-4 border border-slate-700">
                   <option value="rf">Random Forest Classifier</option>
                   <option value="xgb">XGBoost Classifier</option>
-                  <option value="lr">Logistic Regression</option>
                 </select>
-              </div>
-
-              <div className="w-full h-[65vh] border border-slate-700 rounded-xl overflow-hidden">
-                <iframe
-                  src="http://localhost:8502"
-                  title="Auto-EDA Module"
-                  className="w-full h-full"
-                />
+                <button 
+                  onClick={handleTrain}
+                  disabled={!file || processing}
+                  className="w-full px-6 py-3 bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-600 disabled:bg-slate-700"
+                >
+                  {processing ? 'Entraînement...' : 'Lancer l\'entraînement'}
+                </button>
+                {reportUrl && (
+                  <a href={reportUrl} target="_blank" className="block mt-4 text-teal-400 hover:underline">Voir le rapport généré</a>
+                )}
               </div>
             </div>
 

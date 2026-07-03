@@ -20,7 +20,7 @@ class CreateCheckoutSessionView(APIView):
     def post(self, request):
         try:
             print("DEBUG: START - CreateCheckoutSessionView.post")
-            plan = request.query_params.get('plan', '').lower()
+            plan = request.data.get('plan', '').lower()
             print(f"DEBUG: Received plan: '{plan}'")
             
             # Valid plans are starter, pro, enterprise
